@@ -71,9 +71,9 @@ class SpotifyWrapper:
 	def handle(self, request):
 		functions = {
 			'queue': {
-				'queue-track': self.add_song_to_queue,
-				'queue-album': self.add_album_to_queue,
-				'queue-playlist': self.add_playlist_to_queue
+				'queue_track': self.add_song_to_queue,
+				'queue_album': self.add_album_to_queue,
+				'queue_playlist': self.add_playlist_to_queue
 			}
 		}
 
@@ -87,7 +87,7 @@ class SpotifyWrapper:
 	
 	# End User Functions
 
-	def add_song_to_queue(self, song_id, iterator=None):
+	def add_song_to_queue(self, song_id):
 		if song_id.startswith('spotify:track:'):
 			uri = song_id
 		else:
