@@ -1,5 +1,7 @@
 runtime: python39
 
+service: staging
+
 handlers:
   # This configures Google App Engine to serve the files in the app's static
   # directory.
@@ -10,4 +12,4 @@ handlers:
   # required when static routes are defined, but can be omitted (along with
   # the entire handlers section) when there are no static files defined.
 - url: /.*
-  script: auto
+  script: main.app
