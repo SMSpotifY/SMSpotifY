@@ -5,6 +5,10 @@ from services.FaunaService import FaunaService
 from exceptions.Exceptions import InsufficientPermsException, UnrecognizedServiceException
 from services.SpotifyService import SpotifyWrapper, SpotifyService
 
+# TODO: Revamp access control, bake permissions into roles that are listed in a designated spot, with flags for every type of request
+# TODO: Then implement access control on users as well, with user-level rules taking priority
+
+
 class OperatorService:
 	def __init__(self, tekore_cfg_path, fauna_secret):
 		self._setup_spotify(tekore_cfg_path)

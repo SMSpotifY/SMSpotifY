@@ -13,10 +13,6 @@ file = 'tekore.cfg'
 fauna_secret = os.environ['FAUNA_SECRET']
 operator = OperatorService(file, fauna_secret)
 
-account_sid = os.environ['TWILIO_ACCOUNT_SID']
-auth_token = os.environ['TWILIO_AUTH_TOKEN']
-twilio_auth_info = (account_sid, auth_token)
-
 # Web App
 
 app = Flask(__name__)
