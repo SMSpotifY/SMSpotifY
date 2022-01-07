@@ -10,12 +10,12 @@ from services.SpotifyService import SpotifyWrapper, SpotifyService
 
 
 class OperatorService:
-	def __init__(self, tekore_cfg_path, fauna_secret):
-		self._setup_spotify(tekore_cfg_path)
+	def __init__(self, fauna_secret):
+		self._setup_spotify()
 		self._setup_fauna(fauna_secret)
 
-	def _setup_spotify(self, path):
-		conf = tk.config_from_file(path, return_refresh=True)
+	def _setup_spotify(self):
+		conf = tk.config_from_environmen(return_refresh=True)
 		token = tk.refresh_user_token(*conf[:2], conf[3])
 		spotify_service = SpotifyService(tk.Spotify(token))
 		self.spotify = SpotifyWrapper(spotify_service)
