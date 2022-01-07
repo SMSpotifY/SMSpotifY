@@ -20,7 +20,7 @@ twilio_auth_info = (account_sid, auth_token)
 
 app = Flask(__name__)
 
-@app.route('/sms', methods=['POST'])
+@app.route('/', methods=['POST'])
 def sms():
 	number = request.form['From']
 	message_body = request.form['Body']
@@ -37,4 +37,7 @@ def sms():
 	return str(resp)
 
 if __name__ == '__main__':
-	app.run()
+	# app.run(port=8080)
+	ids = operator.spotify.service.get_device_ids()
+	for dev in ids:
+		print(dev)

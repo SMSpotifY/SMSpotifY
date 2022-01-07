@@ -1,6 +1,7 @@
 from re import split
 import tekore as tk
 from operator import itemgetter
+from SMSPotifY.exceptions.Exceptions import UnrecognizedRequestException
 from services.FaunaService import FaunaService
 from exceptions.Exceptions import InsufficientPermsException, UnrecognizedServiceException
 from services.SpotifyService import SpotifyWrapper, SpotifyService
@@ -29,10 +30,11 @@ class OperatorService:
 			return True
 		else:
 			allowed_actions = {
-				'end_user': ['queue_song', 'queue_album', 'queue_playlist'],
+				'end_user': ['queue_track', 'queue_album', 'queue_playlist'],
 				'non_user': []
 			}
-			return request_type in allowed_actions[user.role]
+			print(user)
+			return request_type in allowed_actions[user['role']]
 
 	def parse_message(self, message_body, number):
 		user = self.fauna.get_user_by_phone_number(number)
@@ -48,15 +50,17 @@ class OperatorService:
 		else:
 			# FAUNA
 			fauna_commands = ['whitelist']
+			spotify_commands = ['setdevice']
 			split_msg = message_body.split(' ')
 			command = split_msg.pop(0)
-			args = " ".join(split_msg).split(';')
+			data = ' '.join(split_msg)
+
+			request_type = command
 			
 			if command in fauna_commands:
 				request_service = 'fauna'
-				data = args
-
 				if command == 'whitelist':
+					args = " ".join(split_msg).split(';')
 					name = args[0]
 					num = args[1]
 					role = args[2]
@@ -66,6 +70,12 @@ class OperatorService:
 						'role': role
 					}
 					request_type = 'create_user'
+
+			if command in spotify_commands:
+				request_service = 'spotify'
+
+			if command not in fauna_commands and command not in spotify_commands:
+				raise UnrecognizedRequestException('Command not recognised. Please try again')
 
 		return_object = {
 			'user': user,

@@ -1,6 +1,8 @@
 import tekore as tk
 from time import sleep
 
+from SMSPotifY.exceptions.Exceptions import NoActiveDevices
+
 class SpotifyService:
 	def __init__(self, s_ctx):
 		self.context = s_ctx
@@ -63,6 +65,8 @@ class SpotifyService:
 
 # This class wraps SpotifyService and provides high level functions meant to be user tasks. This should have no 
 # usage of tekore, but instead only makes calls via SpotifyService
+
+#TODO: add functions for getting and setting device id
 class SpotifyWrapper:
 	def __init__(self, spotifyService):
 		self.service = spotifyService
@@ -73,7 +77,8 @@ class SpotifyWrapper:
 			'queue': {
 				'queue_track': self.add_song_to_queue,
 				'queue_album': self.add_album_to_queue,
-				'queue_playlist': self.add_playlist_to_queue
+				'queue_playlist': self.add_playlist_to_queue,
+				'set_device': self.set_device,
 			}
 		}
 
@@ -81,9 +86,6 @@ class SpotifyWrapper:
 			song_names = functions['queue'][request['request_type']](request['data'])
 			text_to_send = 'Thanks, {}, the following songs have been added to the queue:\n{}'.format(request["user"]["name"].split(" ")[0], "\n".join(song_names))
 			return text_to_send
-
-
-	# # Security/Auth Functions
 	
 	# End User Functions
 
@@ -99,10 +101,8 @@ class SpotifyWrapper:
 	def add_album_to_queue(self, album_id):
 		song_uris = self.service.get_song_uris_from_album(album_id)
 		song_names = self.service.get_song_names_from_album(album_id)
-		it = (x for x in song_uris)
-		for i, item in enumerate(it):
-			self.add_song_to_queue(item, iterator=i)
-			sleep(1)
+		for song in song_uris:
+			song_names.append(self.add_song_to_queue(song))
 		return song_names
 
 	def add_playlist_to_queue(self, playlist_id):
@@ -113,8 +113,17 @@ class SpotifyWrapper:
 			self.add_song_to_queue(item, iterator=i)
 		return song_names
 
-	# Helper Functions
+	def set_device(self, device_name='office_echo'):
+		device_names = {
+			'office_echo': 'Office Echo',
+			'work_laptop': 'Web Player (Chrome)',
+			'everywhere': '',
+			'phone': ''
+		}
 
+		devices = self.service.get_device_ids()
+		next((item for item in devices if item['name'] == device_names[device_name]), None)
+		
 	def _get_device_id(self):
 		unfiltered_devices = self.service.get_device_ids()
 		device_ids = []
@@ -123,8 +132,10 @@ class SpotifyWrapper:
 			if unfiltered_devices[i].is_active:
 				device_ids.append(unfiltered_devices[i].id)
 
-		if (len(device_ids) > 1 or len(device_ids) < 1):
-			print('More than one device ID active. In the future, you\'ll be able to select which ID you want. For now, try again?')
+		if len(device_ids) > 1:
+			print('More than one device ID active. In the future, you\'ll be able to select which ID you want. For now, try again or ask sara?')
 			return None
+		elif len(device_ids) == 0:
+			raise NoActiveDevices('No active devices were found')
 		else:
 			return device_ids[0]

@@ -21,3 +21,7 @@ class UnrecognizedServiceException(ProgramError):
 class UnrecognizedRequestException(ProgramError):
 	# Raised when the request type is unknown
 	pass
+
+class NoActiveDevices(ProgramError):
+	# Raised when no active devies are found
+	pass
