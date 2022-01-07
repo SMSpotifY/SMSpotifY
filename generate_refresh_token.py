@@ -1,7 +1,15 @@
+from json import load
+import os
+import os
 import tekore as tk
+from dotenv import load_dotenv
 
-client_id = 'f63ef670e01d498bbdb1853dd5fe39a2'
-client_secret = '69f66ae8edb44d1385156fe83d182c44'
+load_dotenv()
+
+
+
+client_id = os.environ('SPOTIFY_CLIENT_ID')
+client_secret = os.environ('SPOTIFY_CLIENT_SECRET')
 redirect_uri = 'https://example.com/callback'
 
 conf = (client_id, client_secret, redirect_uri)
