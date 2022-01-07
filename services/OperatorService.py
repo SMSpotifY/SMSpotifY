@@ -15,7 +15,7 @@ class OperatorService:
 		self._setup_fauna(fauna_secret)
 
 	def _setup_spotify(self):
-		conf = tk.config_from_environmen(return_refresh=True)
+		conf = tk.config_from_environment(return_refresh=True)
 		token = tk.refresh_user_token(*conf[:2], conf[3])
 		spotify_service = SpotifyService(tk.Spotify(token))
 		self.spotify = SpotifyWrapper(spotify_service)
