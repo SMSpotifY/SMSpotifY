@@ -1,0 +1,5 @@
+faunadb==4.1.1
+Flask==2.0.2
+python-dotenv==0.19.2
+tekore==4.1.0
+twilio==7.4.0
