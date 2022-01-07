@@ -10,9 +10,9 @@ from services.SpotifyService import SpotifyWrapper, SpotifyService
 
 
 class OperatorService:
-	def __init__(self, fauna_secret):
+	def __init__(self, FAUNS):
 		self._setup_spotify()
-		self._setup_fauna(fauna_secret)
+		self._setup_fauna(FAUNS)
 
 	def _setup_spotify(self):
 		conf = tk.config_from_environment(return_refresh=True)

@@ -8,9 +8,9 @@ from exceptions.Exceptions import UnrecognizedRequestException
 from exceptions.Exceptions import MoreThanOneUserFoundException, UserNotFoundException
 
 class FaunaService:
-	def __init__(self, fauna_secret):
+	def __init__(self, FAUNS):
 		self.client = FaunaClient(
-			secret = fauna_secret,
+			secret = FAUNS,
 			domain = 'db.us.fauna.com',
 			scheme = 'https'
 		)

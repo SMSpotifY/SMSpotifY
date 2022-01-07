@@ -10,10 +10,10 @@ load_dotenv()
 # SETUP
 
 account_sid = os.environ['TWILIO_ACCOUNT_SID']
-fauna_secret = os.environ['FAUNA_SECRET']
+FAUNS = os.environ['FAUNS']
 auth_token = os.environ['TWILIO_AUTH_TOKEN']
 
-operator = OperatorService(fauna_secret)
+operator = OperatorService(FAUNS)
 twilio_auth_info = (account_sid, auth_token)
 
 # Web App
