@@ -6,8 +6,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
-
 client_id = os.environ('SPOTIFY_CLIENT_ID')
 client_secret = os.environ('SPOTIFY_CLIENT_SECRET')
 redirect_uri = 'https://example.com/callback'
