@@ -122,8 +122,8 @@ class SpotifyWrapper:
 		}
 
 		devices = self.service.get_device_ids()
-		new_device = next((item for item in devices if item['name'] == device_names[device_name]), None)
-		self.device_id = new_device['id']
+		new_device = next((item for item in devices if item.name == device_names[device_name]), None)
+		self.device_id = new_device.id
 		
 		return f'Device has been changed to: {new_device["name"]}'
 		
