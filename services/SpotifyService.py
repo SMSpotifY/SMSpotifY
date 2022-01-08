@@ -1,7 +1,7 @@
 import tekore as tk
 from time import sleep
 
-from SMSPotifY.exceptions.Exceptions import NoActiveDevices
+from exceptions.Exceptions import NoActiveDevices
 
 class SpotifyService:
 	def __init__(self, s_ctx):
@@ -70,7 +70,7 @@ class SpotifyService:
 class SpotifyWrapper:
 	def __init__(self, spotifyService):
 		self.service = spotifyService
-		self.device_id = self._get_device_id()
+		self.set_device()
 
 	def handle(self, request):
 		functions = {
@@ -78,8 +78,8 @@ class SpotifyWrapper:
 				'queue_track': self.add_song_to_queue,
 				'queue_album': self.add_album_to_queue,
 				'queue_playlist': self.add_playlist_to_queue,
-				'set_device': self.set_device,
-			}
+			},
+			'set_device': self.set_device,
 		}
 
 		if request['request_type'] in functions['queue']:
@@ -122,7 +122,10 @@ class SpotifyWrapper:
 		}
 
 		devices = self.service.get_device_ids()
-		next((item for item in devices if item['name'] == device_names[device_name]), None)
+		new_device = next((item for item in devices if item['name'] == device_names[device_name]), None)
+		self.device_id = new_device['id']
+		
+		return f'Device has been changed to: {new_device["name"]}'
 		
 	def _get_device_id(self):
 		unfiltered_devices = self.service.get_device_ids()
@@ -136,6 +139,7 @@ class SpotifyWrapper:
 			print('More than one device ID active. In the future, you\'ll be able to select which ID you want. For now, try again or ask sara?')
 			return None
 		elif len(device_ids) == 0:
-			raise NoActiveDevices('No active devices were found')
+			print('no devices? owo')
+			# raise NoActiveDevices('No active devices were found')
 		else:
 			return device_ids[0]

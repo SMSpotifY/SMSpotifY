@@ -37,7 +37,7 @@ def sms():
 	return str(resp)
 
 if __name__ == '__main__':
-	# app.run(port=8080)
-	ids = operator.spotify.service.get_device_ids()
-	for dev in ids:
-		print(dev)
+	app.run(port=8080)
+	# ids = operator.spotify.service.get_device_ids()
+	# for dev in ids:
+	# 	print(dev)

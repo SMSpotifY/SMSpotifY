@@ -1,13 +1,14 @@
 from re import split
 import tekore as tk
 from operator import itemgetter
-from SMSPotifY.exceptions.Exceptions import UnrecognizedRequestException
 from services.FaunaService import FaunaService
-from exceptions.Exceptions import InsufficientPermsException, UnrecognizedServiceException
+from exceptions.Exceptions import InsufficientPermsException, UnrecognizedServiceException, UnrecognizedRequestException
 from services.SpotifyService import SpotifyWrapper, SpotifyService
 
 # TODO: Revamp access control, bake permissions into roles that are listed in a designated spot, with flags for every type of request
 # TODO: Then implement access control on users as well, with user-level rules taking priority
+
+# TODO Like songs by admins
 
 
 class OperatorService:
@@ -33,7 +34,6 @@ class OperatorService:
 				'end_user': ['queue_track', 'queue_album', 'queue_playlist'],
 				'non_user': []
 			}
-			print(user)
 			return request_type in allowed_actions[user['role']]
 
 	def parse_message(self, message_body, number):
@@ -50,7 +50,7 @@ class OperatorService:
 		else:
 			# FAUNA
 			fauna_commands = ['whitelist']
-			spotify_commands = ['setdevice']
+			spotify_commands = ['set_device']
 			split_msg = message_body.split(' ')
 			command = split_msg.pop(0)
 			data = ' '.join(split_msg)
