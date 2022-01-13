@@ -1,5 +1,4 @@
 from faunadb import query as q
-from faunadb.objects import Ref
 from faunadb.client import FaunaClient
 
 from operator import itemgetter

@@ -1,20 +1,23 @@
-from re import split
-import tekore as tk
 from operator import itemgetter
-from services.FaunaService import FaunaService
+
+import tekore as tk
+
 from exceptions.Exceptions import InsufficientPermsException, UnrecognizedServiceException, UnrecognizedRequestException
+from services.FaunaService import FaunaService
 from services.SpotifyService import SpotifyWrapper, SpotifyService
 
-# TODO: Revamp access control, bake permissions into roles that are listed in a designated spot, with flags for every type of request
+
+# TODO: Revamp access control, bake permissions into roles that are listed in a designated spot, with
+#  flags for every type of request
 # TODO: Then implement access control on users as well, with user-level rules taking priority
 
 # TODO Like songs by admins
 
 
 class OperatorService:
-	def __init__(self, FAUNS):
+	def __init__(self, fauna_secret):
 		self._setup_spotify()
-		self._setup_fauna(FAUNS)
+		self._setup_fauna(fauna_secret)
 
 	def _setup_spotify(self):
 		conf = tk.config_from_environment(return_refresh=True)
@@ -25,7 +28,8 @@ class OperatorService:
 	def _setup_fauna(self, secret):
 		self.fauna = FaunaService(secret)
 
-	def user_has_perms(self, request_object):
+	@staticmethod
+	def user_has_perms(request_object):
 		user, request_type = itemgetter('user', 'request_type')(request_object)
 		if user['role'] == 'admin':
 			return True
@@ -36,11 +40,10 @@ class OperatorService:
 			}
 			return request_type in allowed_actions[user['role']]
 
+	# TODO: Create a Request class
 	def parse_message(self, message_body, number):
 		user = self.fauna.get_user_by_phone_number(number)
-		request_type = 'unknown'
 		request_service = 'unknown'
-		data = 'unknown'
 		if message_body.startswith('https://open.spotify.com/'):
 			split_link = message_body.split('/')
 			media_type = split_link[3]
@@ -103,8 +106,9 @@ class OperatorService:
 			raise InsufficientPermsException('You do not have sufficient permissions')
 
 
-example_request = {
-	'user': '',
-	'request_type': '',
-	'data': ''
-}
+# example_request = {
+# 	'user': '',
+# 	'request_service'; '',
+# 	'request_type': '',
+# 	'data': ''
+# }
