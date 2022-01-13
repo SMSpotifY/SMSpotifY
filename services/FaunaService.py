@@ -6,6 +6,7 @@ from exceptions.Exceptions import UnrecognizedRequestException
 
 from exceptions.Exceptions import MoreThanOneUserFoundException, UserNotFoundException
 
+
 class FaunaService:
 	def __init__(self, FAUNS):
 		self.client = FaunaClient(
