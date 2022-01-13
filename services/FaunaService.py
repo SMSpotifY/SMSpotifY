@@ -73,6 +73,7 @@ class FaunaService:
 		return "The following user has been created: {} with the following attributes: {}".format(result['ref'], {name, number, role})
 
 	# adds +1 to the start of phone number if it doesn't already have it
+	@staticmethod
 	def _normalise_phone_number(self, number):
 		phone_number = number
 		if not number.startswith('+1'):
