@@ -1,10 +1,13 @@
+from operator import itemgetter
+
+
 class SpotifyService:
     def __init__(self, s_ctx):
         self.context = s_ctx
 
     # print("Initialized")
 
-    def get_device_ids(self):
+    def get_devices(self):
         return self.context.playback_devices()
 
     def get_currently_playing(self):
@@ -51,19 +54,18 @@ class SpotifyService:
 
     def add_song_to_queue(self, track_uri, device_id=None):
         if device_id is None:
-            device_id = self.get_device_ids()[0]
+            device_id = self.get_devices()[0]
 
         self.context.playback_queue_add(track_uri, device_id)
 
 
 # This class wraps SpotifyService and provides high level functions meant to be user tasks. This should have no
 # usage of tekore, but instead only makes calls via SpotifyService
-
-# TODO: add functions for getting and setting device id
 class SpotifyWrapper:
-    def __init__(self, spotifyService):
-        self.service = spotifyService
-        self.set_device()
+    def __init__(self, spotify_service, initial_device='office_echo'):
+        self.device_id = ''
+        self.service = spotify_service
+        self.set_device(initial_device)
 
     def handle(self, request):
         functions = {
@@ -73,13 +75,17 @@ class SpotifyWrapper:
                 'queue_playlist': self.add_playlist_to_queue,
             },
             'set_device': self.set_device,
+            'get_devices': self.get_device_ids
         }
 
         # TODO: fix this shit
         if request['request_type'] in functions['queue']:
             song_names = functions['queue'][request['request_type']](request['data'])
+            requester_name = request["user"]["name"].split(" ")[0]
             text_to_send = 'Thanks, {}, the following songs have been added to the queue:\n{}'.format(
-                request["user"]["name"].split(" ")[0], "\n".join(song_names))
+                requester_name,
+                "\n".join(song_names)
+            )
             return text_to_send
         else:
             text_to_send = functions[request['request_type']](request['data'])
@@ -111,6 +117,13 @@ class SpotifyWrapper:
             self.add_song_to_queue(item, iterator=i)
         return song_names
 
+    def get_device_ids(self, _):
+        devices = self.service.get_devices()
+        device_names = []
+        for device in devices:
+            device_names.append(device.id)
+        return '\n'.join(device_names)
+
     def set_device(self, device_name='office_echo'):
         device_names = {
             'office_echo': 'Office Echo',
@@ -118,15 +131,20 @@ class SpotifyWrapper:
             'everywhere': '',
             'phone': ''
         }
+        if device_name in device_names:
+            name_to_return = device_names[device_name]
+            devices = self.service.get_devices()
+            new_device = next((item for item in devices if item.name == device_names[device_name]), None)
+            self.device_id = new_device.id
+        else:
+            # this is hacky and i should fix it
+            name_to_return = device_name
+            self.device_id = device_name
 
-        devices = self.service.get_device_ids()
-        new_device = next((item for item in devices if item.name == device_names[device_name]), None)
-        self.device_id = new_device.id
-
-        return f'Device has been changed to: {new_device.name}'
+        return f'Device has been changed to: {name_to_return}'
 
     def _get_device_id(self):
-        unfiltered_devices = self.service.get_device_ids()
+        unfiltered_devices = self.service.get_devices()
         device_ids = []
 
         for i in range(len(unfiltered_devices)):
