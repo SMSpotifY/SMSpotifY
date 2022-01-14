@@ -63,9 +63,10 @@ class SpotifyService:
         track_id = track_uri
 
         if track_id.startswith('spotify:track:'):
-            track_id = track_id[13:]
+            length_of_startswith = 14
+            track_id = "".join(track_id[length_of_startswith:])
 
-        self.context.saved_tracks_add(track_id)
+        self.context.saved_tracks_add([track_id])
         return f'Thanks, {song_name} has been liked.'
 
 
@@ -154,9 +155,10 @@ class SpotifyWrapper:
 
         return f'Device has been changed to: {name_to_return}'
 
-    def like_song(self):
-        current_song = self.service.get_currently_playing()
-        return self.service.like_song(current_song.uri)
+    def like_song(self, _):
+        current_song_uri = self.service.get_currently_playing().item.uri
+        print(current_song_uri)
+        return self.service.like_song(current_song_uri)
 
     def _get_device_id(self):
         unfiltered_devices = self.service.get_devices()
