@@ -58,6 +58,17 @@ class SpotifyService:
 
         self.context.playback_queue_add(track_uri, device_id)
 
+    def like_song(self, track_uri):
+        song_name = self.get_song_name_from_uri(track_uri)
+        track_id = track_uri
+
+        if track_id.startswith('spotify:track:'):
+            length_of_startswith = 14
+            track_id = "".join(track_id[length_of_startswith:])
+
+        self.context.saved_tracks_add([track_id])
+        return f'Thanks, {song_name} has been liked.'
+
 
 # This class wraps SpotifyService and provides high level functions meant to be user tasks. This should have no
 # usage of tekore, but instead only makes calls via SpotifyService
@@ -74,8 +85,9 @@ class SpotifyWrapper:
                 'queue_album': self.add_album_to_queue,
                 'queue_playlist': self.add_playlist_to_queue,
             },
-            'set_device': self.set_device,
-            'get_devices': self.get_device_ids
+            'get_devices': self.get_device_ids,
+            'like_song': self.like_song,
+            'set_device': self.set_device
         }
 
         # TODO: fix this shit
@@ -143,6 +155,11 @@ class SpotifyWrapper:
 
         return f'Device has been changed to: {name_to_return}'
 
+    def like_song(self, _):
+        current_song_uri = self.service.get_currently_playing().item.uri
+        print(current_song_uri)
+        return self.service.like_song(current_song_uri)
+
     def _get_device_id(self):
         unfiltered_devices = self.service.get_devices()
         device_ids = []
@@ -153,7 +170,8 @@ class SpotifyWrapper:
 
         if len(device_ids) > 1:
             print(
-                'More than one device ID active. In the future, you\'ll be able to select which ID you want. For now, try again or ask sara?')
+                'More than one device ID active. In the future, you\'ll be able to select which ID you want. For now, '
+                'try again or ask sara?')
             return None
         elif len(device_ids) == 0:
             print('no devices? owo')
