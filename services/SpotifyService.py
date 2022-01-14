@@ -58,6 +58,9 @@ class SpotifyService:
 
         self.context.playback_queue_add(track_uri, device_id)
 
+    def like_song(self, track_uri):
+        pass
+
 
 # This class wraps SpotifyService and provides high level functions meant to be user tasks. This should have no
 # usage of tekore, but instead only makes calls via SpotifyService
@@ -74,8 +77,9 @@ class SpotifyWrapper:
                 'queue_album': self.add_album_to_queue,
                 'queue_playlist': self.add_playlist_to_queue,
             },
-            'set_device': self.set_device,
-            'get_devices': self.get_device_ids
+            'get_devices': self.get_device_ids,
+            'like_song': self.like_song,
+            'set_device': self.set_device
         }
 
         # TODO: fix this shit
@@ -142,6 +146,10 @@ class SpotifyWrapper:
             self.device_id = device_name
 
         return f'Device has been changed to: {name_to_return}'
+
+    def like_song(self):
+        current_song = self.service.get_currently_playing()
+        return self.service.like_song(current_song.uri)
 
     def _get_device_id(self):
         unfiltered_devices = self.service.get_devices()
