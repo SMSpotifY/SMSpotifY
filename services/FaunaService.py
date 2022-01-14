@@ -74,7 +74,7 @@ class FaunaService:
 
 	# adds +1 to the start of phone number if it doesn't already have it
 	@staticmethod
-	def _normalise_phone_number(self, number):
+	def _normalise_phone_number(number):
 		phone_number = number
 		if not number.startswith('+1'):
 			phone_number = f'+1{number}'

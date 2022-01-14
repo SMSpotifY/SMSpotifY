@@ -63,7 +63,7 @@ class OperatorService:
         else:
             # FAUNA
             fauna_commands = ['whitelist']
-            spotify_commands = ['set_device', 'get_devices']
+            spotify_commands = ['set_device', 'get_devices', 'like_song']
             operator_commands = ['set_location']
 
             split_msg = message_body.split(' ')
