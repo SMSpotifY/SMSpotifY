@@ -59,7 +59,14 @@ class SpotifyService:
         self.context.playback_queue_add(track_uri, device_id)
 
     def like_song(self, track_uri):
-        pass
+        song_name = self.get_song_name_from_uri(track_uri)
+        track_id = track_uri
+
+        if track_id.startswith('spotify:track:'):
+            track_id = track_id[13:]
+
+        self.context.saved_tracks_add(track_id)
+        return f'Thanks, {song_name} has been liked.'
 
 
 # This class wraps SpotifyService and provides high level functions meant to be user tasks. This should have no
@@ -161,7 +168,8 @@ class SpotifyWrapper:
 
         if len(device_ids) > 1:
             print(
-                'More than one device ID active. In the future, you\'ll be able to select which ID you want. For now, try again or ask sara?')
+                'More than one device ID active. In the future, you\'ll be able to select which ID you want. For now, '
+                'try again or ask sara?')
             return None
         elif len(device_ids) == 0:
             print('no devices? owo')
